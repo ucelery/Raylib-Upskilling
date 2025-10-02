@@ -7,28 +7,28 @@ public class Program
     static void Main(string[] args)
     {
         Vector2 initPos = new Vector2(500, 500);
-        Player player = new Player(50, initPos);
+        GameObject playerObject = new GameObject();
+        playerObject.AddComponent(new Drawable("resources/agents/player/Player.png"));
+        playerObject.AddComponent(new Player());
 
         Raylib.InitWindow(1280, 720, "Test");
         Raylib.SetTargetFPS(144);
 
-        Texture2D background = Raylib.LoadTexture("OCC_BG.jpg");
+        Texture2D background = Raylib.LoadTexture("resources/background/Background_ingame.png");
 
-        player.Initialize();
+        playerObject.Initialize();
 
         while (!Raylib.WindowShouldClose())
         {
-            player.Movement();
-
             Raylib.BeginDrawing();
             Raylib.DrawTexture(background, 0, 0, Color.White);
-            player.Draw();
+            playerObject.Update();   
 
             Raylib.DrawFPS(0, 0);
             Raylib.EndDrawing();
         }
 
-        player.Unload();
+        playerObject.Destroy();
         Raylib.UnloadTexture(background);
         Raylib.CloseWindow();
     }

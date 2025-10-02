@@ -3,10 +3,11 @@ using Raylib_cs;
 
 public class Ball
 {
-    private int speed;
+    private int speed;    
     private Texture2D sprite;
 
     public Vector2 position = new Vector2();
+    private Vector2 velocity = new Vector2();
 
     public Ball(int speed, Vector2 initPos)
     {
@@ -16,13 +17,7 @@ public class Ball
 
     public void Initialize()
     {
-        // sprite = Raylib.LoadTexture("DrunkenStupor.png");
         Raylib.SetTextureFilter(sprite, TextureFilter.Point);
-    }
-
-    public void Movement()
-    {
-        
     }
 
     public void Draw()
