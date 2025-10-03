@@ -1,5 +1,6 @@
 public abstract class Component
 {
+    public bool enabled = true;
     public GameObject GameObject { get; private set; } = null!;
 
     internal void Attach(GameObject gameObject)

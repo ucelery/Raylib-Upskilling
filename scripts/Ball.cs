@@ -1,33 +1,51 @@
 using System.Numerics;
 using Raylib_cs;
 
-public class Ball
+public class Ball : Component
 {
-    private int speed;    
-    private Texture2D sprite;
+    private int speed = 100;
+    private int speedScale = 4;
+    private float despawnTimeLeft;
+    private float despawnTimer = 5;
+    private Vector2 direction = Vector2.Zero;
 
-    public Vector2 position = new Vector2();
-    private Vector2 velocity = new Vector2();
+    public delegate void BallEvent(Ball ball);
+    public event BallEvent OnDespawn;
 
-    public Ball(int speed, Vector2 initPos)
-    {
-        this.speed = speed;
-        this.position = initPos;
+    public void Reinitialize() {
+        despawnTimeLeft = despawnTimer;
     }
 
-    public void Initialize()
+    public void SetDirection(Vector2 direction)
     {
-        Raylib.SetTextureFilter(sprite, TextureFilter.Point);
+        this.direction = direction;
     }
 
-    public void Draw()
+    public void HandleMovement()
     {
-        Vector2 offset = new Vector2(sprite.Width / 2, sprite.Height / 2);
-        Raylib.DrawTextureV(sprite, position - offset, Color.White);
+        if (this.direction != Vector2.Zero)
+            GameObject.position += Vector2.Normalize(this.direction) * speed * speedScale * Raylib.GetFrameTime();
     }
 
-    public void Unload()
+    public void HandleDespawn()
     {
-        Raylib.UnloadTexture(sprite);
+        despawnTimeLeft -= Raylib.GetFrameTime();
+
+        if (despawnTimeLeft <= 0)
+        {
+            GameObject.enabled = false;
+            OnDespawn?.Invoke(this);
+        }
+    }
+
+    public override void Initialize()
+    {
+        GameObject.name = "Ball";
+    }
+
+    public override void Update()
+    {
+        HandleMovement();
+        HandleDespawn();
     }
 }

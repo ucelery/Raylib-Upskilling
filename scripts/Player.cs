@@ -3,9 +3,56 @@ using Raylib_cs;
 
 public class Player : Component
 {
+    // Movement options
     private int speed = 100;
     private int speedScale = 4;
     private Vector2 direction = Vector2.Zero;
+
+    // Shoot options
+    private float cooldown = 1f;
+    private float currentCd;
+    private Queue<Ball> balls = new();
+
+    public override void Update()
+    {
+        HandleMovement();
+        HandleShoot();
+    }
+
+    public void HandleShoot()
+    {
+        if (currentCd > 0) currentCd -= Raylib.GetFrameTime();
+        if (!Raylib.IsKeyDown(KeyboardKey.Space) || currentCd > 0) return;
+
+        currentCd = cooldown;
+
+        Ball ball;
+        if (balls.Count > 0)
+        {
+            ball = balls.Dequeue();
+        }
+        else
+        {
+            GameObject ballObj = new GameObject();
+            ballObj.AddComponent(new Ball());
+            ballObj.AddComponent(new Drawable("resources/bullets/Bullet_player.png"));
+
+            ball = GameObject.Scene.CreateObject(ballObj).GetComponent<Ball>();
+            ball.OnDespawn += OnBallDespawn;
+
+            Console.WriteLine("Check");
+        }
+
+        ball.Reinitialize();
+        ball.SetDirection(new Vector2(0, -1));
+    }
+
+    private void OnBallDespawn(Ball ball)
+    {
+        balls.Enqueue(ball);
+
+        Console.WriteLine("Ball Despawn");
+    }
 
     public void HandleMovement()
     {
@@ -14,10 +61,5 @@ public class Player : Component
 
         if (this.direction != Vector2.Zero)
             GameObject.position += Vector2.Normalize(this.direction) * speed * speedScale * Raylib.GetFrameTime();
-    }
-
-    public override void Update()
-    {
-        HandleMovement();
     }
 }

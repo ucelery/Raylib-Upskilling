@@ -20,6 +20,7 @@ public class Drawable : Component
 
     public override void Initialize()
     {
+        Console.WriteLine("Drawable Init");
         texture = Raylib.LoadTexture(this.texturePath);
         Raylib.SetTextureFilter(texture, this.filter);
     }
