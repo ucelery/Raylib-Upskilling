@@ -10,9 +10,10 @@ public class Ball : Component
     private Vector2 direction = Vector2.Zero;
 
     public delegate void BallEvent(Ball ball);
-    public event BallEvent OnDespawn;
+    public event BallEvent? OnDespawn;
 
     public void Reinitialize() {
+        GameObject.enabled = true;
         despawnTimeLeft = despawnTimer;
     }
 
