@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.Numerics;
 using Raylib_cs;
@@ -11,7 +12,7 @@ public class Player : Component
     private Vector2 direction = Vector2.Zero;
 
     // Shoot options
-    private float cooldown = 0.2f;
+    private float cooldown = 0.001f;
     private float currentCd;
     private Queue<Ball> balls = new();
 
@@ -53,7 +54,20 @@ public class Player : Component
 
         ball.GameObject.position = this.GameObject.position;
         ball.Reinitialize();
-        ball.SetDirection(new Vector2(0, -1));
+
+        ball.SetDirection(RandomDirection());
+    }
+
+    private Vector2 RandomDirection()
+    {
+        Random rnd = new Random();
+
+        float min = -1;
+        float max = 1;
+        float randX = (float)(rnd.NextDouble() * (max - min) + min);
+        float randY = (float)(rnd.NextDouble() * (max - min) + min);
+
+        return new Vector2(randX, randY);
     }
 
     private void OnBallDespawn(Ball ball)
