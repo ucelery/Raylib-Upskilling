@@ -1,4 +1,5 @@
 using System.Numerics;
+using Raylib_cs;
 
 public class GameObject
 {
@@ -41,6 +42,10 @@ public class GameObject
     {
         component.Attach(this);
         components.Add(component);
+
+        // For when adding a component during run time
+        if (Raylib.IsWindowReady())
+            component.Initialize();
     }
 
     public virtual void Initialize()
@@ -50,8 +55,6 @@ public class GameObject
         {
             component.Initialize();
         }
-
-        Console.WriteLine($"GameObject {name} Initialized");
     }
 
     public virtual void Update()

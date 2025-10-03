@@ -41,6 +41,7 @@ public class Ball : Component
     public override void Initialize()
     {
         GameObject.name = "Ball";
+        Console.WriteLine("Ball has been initialized");
     }
 
     public override void Update()

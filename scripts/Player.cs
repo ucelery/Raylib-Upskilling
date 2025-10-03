@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Numerics;
 using Raylib_cs;
 
@@ -9,7 +10,7 @@ public class Player : Component
     private Vector2 direction = Vector2.Zero;
 
     // Shoot options
-    private float cooldown = 1f;
+    private float cooldown = 0.2f;
     private float currentCd;
     private Queue<Ball> balls = new();
 
@@ -30,19 +31,21 @@ public class Player : Component
         if (balls.Count > 0)
         {
             ball = balls.Dequeue();
+            Console.WriteLine("Reuse Ball");
         }
         else
         {
             GameObject ballObj = new GameObject();
             ballObj.AddComponent(new Ball());
-            ballObj.AddComponent(new Drawable("resources/bullets/Bullet_player.png"));
+
+            // TODO: Try to optimize; i feel like we can reuse the same texture that was loaded
+            ballObj.AddComponent(new Drawable("resources/bullets/Bullet_player.png")); 
 
             ball = GameObject.Scene.CreateObject(ballObj).GetComponent<Ball>();
             ball.OnDespawn += OnBallDespawn;
-
-            Console.WriteLine("Check");
         }
 
+        ball.GameObject.position = this.GameObject.position;
         ball.Reinitialize();
         ball.SetDirection(new Vector2(0, -1));
     }

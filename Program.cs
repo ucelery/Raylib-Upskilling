@@ -6,7 +6,9 @@ public class Program
 {
     static void Main(string[] args)
     {
-        Vector2 initPos = new Vector2(500, 500);
+        int windowWidth = 1280;
+        int windowHeight = 720;
+
         Scene gameScene = new Scene();
 
         GameObject playerObject = new GameObject();
@@ -15,7 +17,7 @@ public class Program
 
         gameScene.CreateObject(playerObject);
 
-        Raylib.InitWindow(1280, 720, "Test");
+        Raylib.InitWindow(windowWidth, windowHeight, "Test");
         Raylib.SetTargetFPS(144);
 
         Texture2D background = Raylib.LoadTexture("resources/background/Background_ingame.png");
