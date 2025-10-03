@@ -5,7 +5,8 @@ using Raylib_cs;
 public class Player : Component
 {
     // Movement options
-    private int speed = 100;
+    private int speed;
+    private int baseSpeed = 100;
     private int speedScale = 4;
     private Vector2 direction = Vector2.Zero;
 
@@ -13,6 +14,11 @@ public class Player : Component
     private float cooldown = 0.2f;
     private float currentCd;
     private Queue<Ball> balls = new();
+
+    public override void Initialize()
+    {
+        speed = baseSpeed;
+    }
 
     public override void Update()
     {
@@ -62,7 +68,12 @@ public class Player : Component
         this.direction.Y = (Raylib.IsKeyDown(KeyboardKey.W) ? -1 : 0) + (Raylib.IsKeyDown(KeyboardKey.S) ? 1 : 0);
         this.direction.X = (Raylib.IsKeyDown(KeyboardKey.A) ? -1 : 0) + (Raylib.IsKeyDown(KeyboardKey.D) ? 1 : 0);
 
+        // Sneak-like movement
+        if (Raylib.IsKeyDown(KeyboardKey.LeftShift))
+            speed = (baseSpeed * speedScale) / 2;
+        else speed = (baseSpeed * speedScale);
+
         if (this.direction != Vector2.Zero)
-            GameObject.position += Vector2.Normalize(this.direction) * speed * speedScale * Raylib.GetFrameTime();
+            GameObject.position += Vector2.Normalize(this.direction) * speed * Raylib.GetFrameTime();
     }
 }
