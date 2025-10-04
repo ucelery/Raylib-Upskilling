@@ -3,17 +3,14 @@ using Raylib_cs;
 
 public class Drawable : Component
 {
-    private string texturePath;
+    private string texturePath = null!;
     private TextureFilter filter = TextureFilter.Bilinear;
     private float scale = 1;
     private float rotation = 0;
 
     public Texture2D Texture { get; private set; }
 
-    public Drawable()
-    {
-        this.texturePath = null;
-    }
+    public Drawable() {}
 
     public Drawable(string texturePath)
     {
