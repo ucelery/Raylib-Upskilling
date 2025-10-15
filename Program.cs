@@ -9,25 +9,31 @@ public class Program
         int windowWidth = 1280;
         int windowHeight = 720;
 
-        Scene gameScene = new Scene();
-
-        GameObject playerObject = new GameObject();
-        playerObject.AddComponent(new Drawable("resources/agents/player/Player.png"));
-        playerObject.AddComponent(new Player());
-
-        gameScene.CreateObject(playerObject);
-
         Raylib.InitWindow(windowWidth, windowHeight, "Test");
         Raylib.SetTargetFPS(144);
 
-        Texture2D background = Raylib.LoadTexture("resources/background/Background_ingame.png");
+        AssetManager.Instance.Initialize();
+
+        Scene gameScene = new Scene();
+
+        GameObject playerObject = new GameObject();
+        playerObject.AddComponent(new Drawable(AssetManager.Instance.Textures["Player"][0]));
+        playerObject.AddComponent(new Player());
+
+        gameScene.AddObject(playerObject);
+
+        GameObject sampleSprite = new GameObject();
+        Drawable dr = new Drawable();
+        dr.SetScale(4);
+        sampleSprite.AddComponent(dr);
+        sampleSprite.AddComponent(new Animator(AssetManager.Instance.Textures["eye"], 0.5f, false));
 
         gameScene.Initialize();
 
         while (!Raylib.WindowShouldClose())
         {
             Raylib.BeginDrawing();
-            Raylib.DrawTexture(background, 0, 0, Color.White);
+            Raylib.DrawTexture(AssetManager.Instance.Textures["Background_ingame"][0], 0, 0, Color.White);
 
             gameScene.Update();
 
@@ -35,8 +41,8 @@ public class Program
             Raylib.EndDrawing();
         }
 
-        playerObject.Destroy();
-        Raylib.UnloadTexture(background);
+        // playerObject.Destroy();
+        AssetManager.Instance.Unload();
         Raylib.CloseWindow();
     }
 }

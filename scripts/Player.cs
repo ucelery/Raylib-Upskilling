@@ -46,9 +46,10 @@ public class Player : Component
             ballObj.AddComponent(new Ball());
 
             // TODO: Try to optimize; i feel like we can reuse the same texture that was loaded
-            ballObj.AddComponent(new Drawable("resources/bullets/Bullet_player.png")); 
+            // TODO: Make asset manager system
+            ballObj.AddComponent(new Drawable(AssetManager.Instance.Textures["Bullet_player"][0])); 
 
-            ball = GameObject.Scene.CreateObject(ballObj).GetComponent<Ball>();
+            ball = GameObject.Scene.AddObject(ballObj).GetComponent<Ball>();
             ball.OnDespawn += OnBallDespawn;
         }
 
@@ -73,8 +74,6 @@ public class Player : Component
     private void OnBallDespawn(Ball ball)
     {
         balls.Enqueue(ball);
-
-        Console.WriteLine("Ball Despawn");
     }
 
     public void HandleMovement()

@@ -3,23 +3,22 @@ using Raylib_cs;
 
 public class Drawable : Component
 {
-    private string texturePath = null!;
     private TextureFilter filter = TextureFilter.Bilinear;
     private float scale = 1;
     private float rotation = 0;
 
     public Texture2D Texture { get; private set; }
 
-    public Drawable() {}
+    public Drawable() { }
 
-    public Drawable(string texturePath)
+    public Drawable(Texture2D texture)
     {
-        this.texturePath = texturePath;
+        this.Texture = texture;
     }
 
-    public Drawable(string texturePath, TextureFilter filter)
+    public Drawable(Texture2D texture, TextureFilter filter)
     {
-        this.texturePath = texturePath;
+        this.Texture = texture;
         this.filter = filter;
     }
 
@@ -28,22 +27,13 @@ public class Drawable : Component
         Texture = texture;
     }
 
-    public override void Initialize()
-    {
-        Texture = Raylib.LoadTexture(this.texturePath);
-        Raylib.SetTextureFilter(Texture, this.filter);
-    }
+    public override void Initialize() { }
 
     public override void Update()
     {
         Vector2 offset = new Vector2(Texture.Width / 2, Texture.Height / 2);
         Raylib.DrawTextureV(Texture, GameObject.position - offset, Color.White);
         Raylib.DrawTextureEx(Texture, GameObject.position - offset, 0, scale, Color.White);
-    }
-
-    public override void Unload()
-    {
-        Raylib.UnloadTexture(Texture);
     }
 
     public void SetScale(float scale)
@@ -54,5 +44,11 @@ public class Drawable : Component
     public void SetRotation(float rotation)
     {
         this.rotation = rotation;
+    }
+
+    public void SetFilter(TextureFilter newFilter)
+    {
+        this.filter = newFilter;
+        Raylib.SetTextureFilter(Texture, newFilter);
     }
 }

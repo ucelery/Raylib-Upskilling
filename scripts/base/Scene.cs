@@ -37,7 +37,7 @@ public class Scene
         }
     }
 
-    public GameObject CreateObject(GameObject gameObject)
+    public GameObject AddObject(GameObject gameObject)
     {
         gameObject.Attach(this);
         toAdd.Add(gameObject);
