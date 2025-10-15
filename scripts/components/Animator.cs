@@ -10,11 +10,12 @@ public class Animator : Component
 
     private bool loop = false;
 
+    public Animator() { }
+
     public Animator(List<Texture2D> sprites)
     {
         this.sprites = sprites;
     }
-
 
     public Animator(List<Texture2D> sprites, float duration, bool loop)
     {
@@ -25,6 +26,8 @@ public class Animator : Component
 
     public override void Update()
     {
+        if (sprites == null || sprites.Count < 1) return;
+
         HandleTimer();
 
         Drawable dr = GameObject.GetComponent<Drawable>();
@@ -50,9 +53,9 @@ public class Animator : Component
                 else
                 {
                     index = sprites.Count - 1;
-                }   
+                }
             }
-            
+
             timer = 0;
         }
     }
@@ -61,5 +64,16 @@ public class Animator : Component
     {
         timer = 0;
         index = 0;
+    }
+
+    public void SetAnimation(List<Texture2D> sprites, float duration, bool loop)
+    {
+        if (this.sprites == sprites)
+            return;
+
+        this.index = 0;
+        this.sprites = sprites;
+        this.duration = duration;
+        this.loop = loop;
     }
 }
