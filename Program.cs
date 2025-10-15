@@ -17,16 +17,17 @@ public class Program
         Scene gameScene = new Scene();
 
         GameObject playerObject = new GameObject();
-        playerObject.AddComponent(new Drawable(AssetManager.Instance.Textures["Player"][0]));
+        playerObject.AddComponent(new Drawable());
         playerObject.AddComponent(new Player());
-
+        playerObject.AddComponent(new Animator());
+        playerObject.name = "Player Object";
         gameScene.AddObject(playerObject);
 
-        GameObject sampleSprite = new GameObject();
-        Drawable dr = new Drawable();
-        dr.SetScale(4);
-        sampleSprite.AddComponent(dr);
-        sampleSprite.AddComponent(new Animator(AssetManager.Instance.Textures["eye"], 0.5f, false));
+        GameObject enemyObject = new GameObject();
+        enemyObject.AddComponent(new Drawable(AssetManager.Instance.Textures["Alien02"][0]));
+        enemyObject.AddComponent(new Enemy());
+        enemyObject.position = new Vector2(windowWidth / 2, windowHeight / 2);
+        gameScene.AddObject(enemyObject);
 
         gameScene.Initialize();
 
@@ -41,7 +42,6 @@ public class Program
             Raylib.EndDrawing();
         }
 
-        // playerObject.Destroy();
         AssetManager.Instance.Unload();
         Raylib.CloseWindow();
     }

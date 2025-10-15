@@ -5,6 +5,9 @@ using Raylib_cs;
 
 public class Player : Component
 {
+    private Animator anim = null!;
+    private Drawable dr = null!;
+
     // Movement options
     private int speed;
     private int baseSpeed = 100;
@@ -19,6 +22,10 @@ public class Player : Component
     public override void Initialize()
     {
         speed = baseSpeed;
+        anim = GameObject.GetComponent<Animator>();
+        dr = GameObject.GetComponent<Drawable>();
+
+        dr.SetScale(5);
     }
 
     public override void Update()
@@ -86,12 +93,26 @@ public class Player : Component
         this.direction.Y = (Raylib.IsKeyDown(KeyboardKey.W) ? -1 : 0) + (Raylib.IsKeyDown(KeyboardKey.S) ? 1 : 0);
         this.direction.X = (Raylib.IsKeyDown(KeyboardKey.A) ? -1 : 0) + (Raylib.IsKeyDown(KeyboardKey.D) ? 1 : 0);
 
+        if (direction.X > 0)
+            dr.SetFlip(new Vector2(1, 1));
+        else if (direction.X < 0)
+            dr.SetFlip(new Vector2(-1, 1));
+
         // Sneak-like movement
         if (Raylib.IsKeyDown(KeyboardKey.LeftShift))
             speed = (baseSpeed * speedScale) / 2;
         else speed = (baseSpeed * speedScale);
 
         if (this.direction != Vector2.Zero)
+        {
             GameObject.position += Vector2.Normalize(this.direction) * speed * Raylib.GetFrameTime();
+            anim.SetAnimation(AssetManager.Instance.Textures["player_move"], 0.25f, true);
+        }
+        else
+        {
+            anim.SetAnimation(AssetManager.Instance.Textures["player_idle"], 0.25f, true);
+        }
+
+        
     }
 }
