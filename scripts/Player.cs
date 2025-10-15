@@ -35,6 +35,9 @@ public class Player : Component
         currentCd = cooldown;
 
         Ball ball;
+        Ball.BallConfig config = new();
+        config.canBounce = true;
+
         if (balls.Count > 0)
         {
             ball = balls.Dequeue();
@@ -51,6 +54,7 @@ public class Player : Component
             ballObj.AddComponent(new Animator(AssetManager.Instance.Textures["player_bullet"], 0.1f, true));
 
             ball = GameObject.Scene.AddObject(ballObj).GetComponent<Ball>();
+            ball.SetConfig(config);
             ball.OnDespawn += OnBallDespawn;
         }
 
