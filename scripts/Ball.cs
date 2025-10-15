@@ -4,36 +4,43 @@ using Raylib_cs;
 
 public class Ball : Component
 {
-    private int speed = 100;
-    private int speedScale = 4;
-    private float despawnTimeLeft;
-    private float despawnTimer = 5;
-    private Vector2 direction = Vector2.Zero;
+    public struct BallConfig() {
+        public int speed = 100;
+        public int speedScale = 4;
+        public float despawnTimer = 5;
+        public Vector2 direction = Vector2.Zero;
+        public bool canBounce = false;
+    }
 
+    private BallConfig config = new();
+
+    public float despawnTimeLeft;
     public delegate void BallEvent(Ball ball);
     public event BallEvent? OnDespawn;
 
     public void Reinitialize()
     {
         GameObject.enabled = true;
-        despawnTimeLeft = despawnTimer;
+        despawnTimeLeft = config.despawnTimer;
     }
 
     public void SetDirection(Vector2 direction)
     {
-        this.direction = direction;
+        config.direction = direction;
     }
 
     public void HandleMovement()
     {
-        if (this.direction != Vector2.Zero)
-            GameObject.position += Vector2.Normalize(this.direction) * speed * speedScale * Raylib.GetFrameTime();
+        if (config.direction != Vector2.Zero)
+            GameObject.position += Vector2.Normalize(config.direction) * config.speed * config.speedScale * Raylib.GetFrameTime();
 
         HandleBounce();
     }
 
     private void HandleBounce()
     {
+        if (!config.canBounce) return;
+        
         // Bounce
         float centerY = Raylib.GetScreenHeight() / 2;
         float centerX = Raylib.GetScreenWidth() / 2;
@@ -49,12 +56,12 @@ public class Ball : Component
 
         if (outsideXBounds)
         {
-            direction.X = -direction.X;
+            config.direction.X = -config.direction.X;
         }
 
         if (outsideYBounds)
         {
-            direction.Y = -direction.Y;
+            config.direction.Y = -config.direction.Y;
         }
     }
 
@@ -81,6 +88,11 @@ public class Ball : Component
 
         // !! Comment this down when not debugging
         // DrawHitboxes();
+    }
+
+    public void SetConfig(BallConfig config)
+    {
+        this.config = config;
     }
 
     private void DrawHitboxes()
