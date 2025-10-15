@@ -33,6 +33,8 @@ public class AssetManager
             AddTextures(fileName, file);
         }
 
+        /// TODO: Make it so that its possible to make nesting folders within the animations directory
+
         // Initialize Animations
         Console.WriteLine("Initializing Animations");
         string[] animDirectories = Directory.GetDirectories("resources/animations");
