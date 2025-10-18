@@ -90,7 +90,6 @@ public class Enemy : Component
         if (balls.Count > 0)
         {
             ball = balls.Dequeue();
-            Console.WriteLine("Reuse Ball");
         }
         else
         {
