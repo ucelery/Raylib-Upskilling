@@ -33,6 +33,10 @@ public class GameObject
     public void SetActive(bool flag)
     {
         enabled = flag;
+        foreach (Component c in components)
+        {
+            c.SetActive(flag);
+        }
 
         if (enabled) OnEnable();
         else OnDisable();
@@ -45,7 +49,11 @@ public class GameObject
 
         // For when adding a component during run time
         if (Raylib.IsWindowReady())
+        {
             component.Initialize();
+            component.Start();
+        }
+            
     }
 
     public virtual void Initialize()
@@ -54,6 +62,15 @@ public class GameObject
         foreach (Component component in copy)
         {
             component.Initialize();
+        }
+    }
+
+    public virtual void Start()
+    {
+        List<Component> copy = components.ToList();
+        foreach (Component component in copy)
+        {
+            component.Start();
         }
     }
 

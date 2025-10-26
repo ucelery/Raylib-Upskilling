@@ -59,6 +59,12 @@ public class Player : Component
             ballObj.AddComponent(new Drawable(AssetManager.Instance.Textures["player_bullet"][0]));
             ballObj.AddComponent(new Animator(AssetManager.Instance.Textures["player_bullet"], 0.1f, true));
 
+            Vector2 colsize = new Vector2(AssetManager.Instance.Textures["player_bullet"][0].Width, AssetManager.Instance.Textures["player_bullet"][0].Height);
+            Collision ballCollision = new Collision(colsize);
+            ballCollision.OnCollisionEnter += HandleBallCollision;
+            ballObj.AddComponent(ballCollision);
+
+
             ball = GameObject.Scene.AddObject(ballObj).GetComponent<Ball>();
             ball.SetConfig(config);
             ball.OnDespawn += OnBallDespawn;
@@ -68,6 +74,11 @@ public class Player : Component
         ball.Reinitialize();
 
         ball.SetDirection(RandomDirection());
+    }
+
+    private void HandleBallCollision(Collision other)
+    {
+        Console.WriteLine("Ball Colliding");
     }
 
     private Vector2 RandomDirection()

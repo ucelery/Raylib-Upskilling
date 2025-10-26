@@ -13,6 +13,14 @@ public class Scene
         }
     }
 
+    public void Start()
+    {
+        foreach (GameObject obj in children)
+        {
+            obj.Start();
+        }
+    }
+
     public void Update()
     {
         foreach (GameObject obj in children)

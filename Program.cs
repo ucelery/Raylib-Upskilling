@@ -30,6 +30,7 @@ public class Program
         gameScene.AddObject(enemyObject);
 
         gameScene.Initialize();
+        gameScene.Start();
 
         while (!Raylib.WindowShouldClose())
         {
@@ -37,6 +38,7 @@ public class Program
             Raylib.DrawTexture(AssetManager.Instance.Textures["Background_ingame"][0], 0, 0, Color.White);
 
             gameScene.Update();
+            CollisionManager.Update();
 
             Raylib.DrawFPS(0, 0);
             Raylib.EndDrawing();

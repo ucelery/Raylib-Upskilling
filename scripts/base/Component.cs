@@ -9,6 +9,11 @@ public abstract class Component
     }
 
     public virtual void Initialize() { }
+    public virtual void Start() { }
     public virtual void Update() { }
     public virtual void Unload() { }
+    public void SetActive(bool active)
+    {
+        enabled = active;
+    }
 }
