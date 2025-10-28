@@ -73,6 +73,6 @@ public class AssetManager
         foreach (var kvp in Textures)
             foreach (Texture2D t in kvp.Value)
                 Raylib.UnloadTexture(t);
-        
+
     }
 }

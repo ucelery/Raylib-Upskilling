@@ -1,5 +1,3 @@
-using System.ComponentModel.DataAnnotations;
-using System.Diagnostics;
 using System.Numerics;
 using Raylib_cs;
 
@@ -15,7 +13,7 @@ public class Player : Component
     private Vector2 direction = Vector2.Zero;
 
     // Shoot options
-    private float cooldown = 0.001f;
+    private float cooldown = 0.1f;
     private float currentCd;
     private Queue<Ball> balls = new();
 
@@ -42,9 +40,6 @@ public class Player : Component
         currentCd = cooldown;
 
         Ball ball;
-        Ball.BallConfig config = new();
-        config.canBounce = true;
-
         if (balls.Count > 0)
         {
             ball = balls.Dequeue();
@@ -52,20 +47,18 @@ public class Player : Component
         else
         {
             GameObject ballObj = new GameObject();
-            ballObj.AddComponent(new Ball());
+            Ball.BallConfig config = new();
+            config.canBounce = true;
+            config.collisionSize = new Vector2(AssetManager.Instance.Textures["player_bullet"][0].Width, AssetManager.Instance.Textures["player_bullet"][0].Height);
 
-            // TODO: Try to optimize; i feel like we can reuse the same texture that was loaded
-            // TODO: Make asset manager system
+            ball = new Ball();
+            ballObj.AddComponent(ball);
             ballObj.AddComponent(new Drawable(AssetManager.Instance.Textures["player_bullet"][0]));
             ballObj.AddComponent(new Animator(AssetManager.Instance.Textures["player_bullet"], 0.1f, true));
+            ballObj.AddComponent(new Collision(config.collisionSize));
+    
+            GameObject.Scene.AddObject(ballObj);
 
-            Vector2 colsize = new Vector2(AssetManager.Instance.Textures["player_bullet"][0].Width, AssetManager.Instance.Textures["player_bullet"][0].Height);
-            Collision ballCollision = new Collision(colsize);
-            ballCollision.OnCollisionEnter += HandleBallCollision;
-            ballObj.AddComponent(ballCollision);
-
-
-            ball = GameObject.Scene.AddObject(ballObj).GetComponent<Ball>();
             ball.SetConfig(config);
             ball.OnDespawn += OnBallDespawn;
         }
@@ -75,12 +68,7 @@ public class Player : Component
 
         ball.SetDirection(RandomDirection());
     }
-
-    private void HandleBallCollision(Collision other)
-    {
-        Console.WriteLine("Ball Colliding");
-    }
-
+    
     private Vector2 RandomDirection()
     {
         Random rnd = new Random();
@@ -122,7 +110,5 @@ public class Player : Component
         {
             anim.SetAnimation(AssetManager.Instance.Textures["player_idle"], 0.25f, true);
         }
-
-        
     }
 }

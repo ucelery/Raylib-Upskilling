@@ -1,47 +1,104 @@
+using System.Numerics;
 using Raylib_cs;
 
-public static class CollisionManager
+public class CollisionManager
 {
-    public static List<Collision> Collisions = new();
-    public static List<Collision> NewCollisions = new();
-
-    public static void Update()
+    private static CollisionManager _instance;
+    public static CollisionManager Instance
     {
-        for (int i = 0; i < Collisions.Count; i++)
+        get
         {
-            Collision a_col = Collisions[i];
-            if (!a_col.enabled) continue;
+            if (_instance == null)
+                _instance = new CollisionManager();
 
-            for (int j = 0; j < Collisions.Count; j++)
-            {
-                Collision b_col = Collisions[j];
-                if (!b_col.enabled) continue;
-                if (a_col == b_col) continue;
+            return _instance;
+        }
+    }
 
-                bool isColliding = Raylib.CheckCollisionRecs(a_col.rectangle, b_col.rectangle);
-                if (isColliding)
+    private Dictionary<Vector2, List<Collision>> collisionsCells = new();
+    private List<Collision> newCollisions = new();
+    private List<Collision> collisions = new();
+
+    private Vector2 cellSize = new Vector2(50, 50);
+
+    public void Update()
+    {
+        UpdateCollisionCells();
+        HandleCollisions();
+
+        DrawDebugGrid();
+    }
+
+    private void HandleCollisions()
+    {
+        foreach (List<Collision> col_list in collisionsCells.Values)
+            foreach (Collision a_col in col_list)
+                foreach (Collision b_col in col_list)
                 {
-                    a_col.OnCollisionEnter?.Invoke(b_col);
-                    b_col.OnCollisionEnter?.Invoke(a_col);
+                    if (a_col == b_col) continue;
+
+                    bool isColliding = Raylib.CheckCollisionRecs(a_col.rectangle, b_col.rectangle);
+
+                    if (isColliding)
+                    {
+                        a_col.OnCollisionEnter?.Invoke(b_col);
+                        b_col.OnCollisionEnter?.Invoke(a_col);
+                    }
                 }
-            }
-        }
+    }
 
-        if (NewCollisions.Count > 0)
+    private void UpdateCollisionCells()
+    {
+        Dictionary<Vector2, List<Collision>> temp = new();
+        foreach (var col in collisions)
         {
-            Collisions.AddRange(NewCollisions);
-            NewCollisions.Clear();
+            if (!col.enabled) continue;
+
+            Vector2 cell = GetCell(col.GameObject.position);
+
+            if (!temp.ContainsKey(cell))
+                temp.Add(cell, new List<Collision>());
+
+            temp[cell].Add(col);
+        }
+
+        collisionsCells = temp;
+
+        if (newCollisions.Count > 0)
+        {
+            collisions.AddRange(newCollisions);
+            newCollisions.Clear();
         }
     }
 
-    public static void AddCollision(Collision collision)
+    public void AddCollision(Collision collision)
     {
-        if (!Collisions.Contains(collision) && !Collisions.Contains(collision))
-            NewCollisions.Add(collision);
+        if (!collisions.Contains(collision) && !newCollisions.Contains(collision))
+            newCollisions.Add(collision);
     }
 
-    public static void RemoveCollision(Collision collision)
+    public void RemoveCollision(Collision collision)
     {
-        NewCollisions.Add(collision);
+        newCollisions.Remove(collision);
+    }
+
+    public void DrawDebugGrid()
+    {
+        float xCellSize = Raylib.GetScreenWidth() / cellSize.X;
+        float yCellSize = Raylib.GetScreenHeight() / cellSize.Y;
+
+        for (int x = 0; x < xCellSize; x++)
+            for (int y = 0; y < yCellSize; y++)
+            {
+                Raylib.DrawRectangleLines(x * (int)cellSize.X, y * (int)cellSize.Y, (int)cellSize.X, (int)cellSize.Y, Color.White);
+                Raylib.DrawText($"({x}, {y})", x * (int)cellSize.X, y * (int)cellSize.Y, 1, Color.White);
+            }
+    }
+    
+    public Vector2 GetCell(Vector2 position)
+    {
+        int cellX = (int)(position.X / cellSize.X);
+        int cellY = (int)(position.Y / cellSize.Y);
+        return new Vector2(cellX, cellY);
     }
 }

@@ -12,6 +12,8 @@ public abstract class Component
     public virtual void Start() { }
     public virtual void Update() { }
     public virtual void Unload() { }
+    public virtual void OnEnable() { }
+    public virtual void OnDisable() { }
     public void SetActive(bool active)
     {
         enabled = active;

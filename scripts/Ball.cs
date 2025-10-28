@@ -9,6 +9,7 @@ public class Ball : Component
         public float despawnTimer = 5;
         public Vector2 direction = Vector2.Zero;
         public bool canBounce = false;
+        public Vector2 collisionSize = Vector2.Zero;
     }
 
     private BallConfig config = new();
@@ -17,9 +18,30 @@ public class Ball : Component
     public delegate void BallEvent(Ball ball);
     public event BallEvent? OnDespawn;
 
+    public override void Initialize()
+    {
+        GameObject.name = "Ball";
+    }
+
+    public override void Start()
+    {
+        GameObject.AddComponent(new Collision(config.collisionSize));
+        Collision col = GameObject.GetComponent<Collision>();
+        col.OnCollisionEnter += HandleHit;
+    }
+
+    public override void Update()
+    {
+        HandleMovement();
+        HandleDespawn();
+
+        // !! Comment this down when not debugging
+        DrawHitboxes();
+    }
+
     public void Reinitialize()
     {
-        GameObject.enabled = true;
+        GameObject.SetActive(true);
         despawnTimeLeft = config.despawnTimer;
     }
 
@@ -34,6 +56,12 @@ public class Ball : Component
             GameObject.position += Vector2.Normalize(config.direction) * config.speed * config.speedScale * Raylib.GetFrameTime();
 
         HandleBounce();
+    }
+
+    private void HandleHit(Collision other)
+    {
+        GameObject.SetActive(false);
+        OnDespawn?.Invoke(this);
     }
 
     private void HandleBounce()
@@ -70,23 +98,9 @@ public class Ball : Component
 
         if (despawnTimeLeft <= 0)
         {
-            GameObject.enabled = false;
+            GameObject.SetActive(false);
             OnDespawn?.Invoke(this);
         }
-    }
-
-    public override void Initialize()
-    {
-        GameObject.name = "Ball";
-    }
-
-    public override void Update()
-    {
-        HandleMovement();
-        HandleDespawn();
-
-        // !! Comment this down when not debugging
-        // DrawHitboxes();
     }
 
     public void SetConfig(BallConfig config)
@@ -96,16 +110,18 @@ public class Ball : Component
 
     private void DrawHitboxes()
     {
-        Drawable ballDrawable = GameObject.GetComponent<Drawable>();
+        // Drawable ballDrawable = GameObject.GetComponent<Drawable>();
 
-        int width = ballDrawable.Texture.Width;
-        int height = ballDrawable.Texture.Height;
-
-        Vector2 offset = new Vector2(ballDrawable.Texture.Width / 2, ballDrawable.Texture.Height / 2);
-        Vector2 pos = GameObject.position;
+        // int width = ballDrawable.Texture.Width;
+        // int height = ballDrawable.Texture.Height;
+        // Vector2 offset = new Vector2(ballDrawable.Texture.Width / 2, ballDrawable.Texture.Height / 2);
+        // Vector2 pos = GameObject.position;
 
         // NOTE: The positioning for DrawRectangleLines uses int as its position so it can be inaccurate
-        Raylib.DrawRectangleLines((int)(pos.X - offset.X), (int)(pos.Y - offset.Y), width, height, Color.Red);
-        Raylib.DrawText($"{GameObject.position}", (int)pos.X, (int)pos.Y + 10, 16, Color.Red);
+        // Raylib.DrawRectangleLines((int)(pos.X - offset.X), (int)(pos.Y - offset.Y), width, height, Color.Red);
+        // Raylib.DrawText($"{GameObject.position}", (int)pos.X, (int)pos.Y + 10, 16, Color.Red);
+
+        // Collision col = GameObject.GetComponent<Collision>();
+        // Raylib.DrawRectangleLines((int)(pos.X - offset.X), (int)(pos.Y - offset.Y), (int)config.collisionSize.X, (int)config.collisionSize.Y, Color.Red);
     }
 }
