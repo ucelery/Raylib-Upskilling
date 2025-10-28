@@ -1,19 +1,8 @@
 using System.Numerics;
 using Raylib_cs;
 
-public class Enemy : Component
+public class Enemy : Agent
 {
-    // Movement options
-    private int speed;
-    private int baseSpeed = 100;
-    private int speedScale = 4;
-    private Vector2 direction = new Vector2(1, 0); // Initial direction to the right
-
-    // Shoot options
-    private float cooldown = 0.01f;
-    private float currentCd;
-    private Queue<Ball> balls = new();
-
     // Behaviour
     public enum EnemyState { Idle, Move , Shoot }
     public struct EnemyBehaviour() {
@@ -28,7 +17,7 @@ public class Enemy : Component
 
     public override void Initialize()
     {
-        speed = baseSpeed;
+        base.Initialize();
 
         // Behaviour Pattern = Idle(0.75) -> Shoot(1) -> Idle(0.5) -> Move(1.25) -> Repeat
         EnemyBehaviour idleBeh = new() { state = EnemyState.Idle, duration = 0.75f };
@@ -42,6 +31,9 @@ public class Enemy : Component
         behaviours.Add(moveBeh);
 
         actionTimer = behaviours[currentBehaviour].duration;
+
+        props.type = AgentType.Enemy;
+        GameObject.Tags.Add("enemy");
     }
 
     public override void Update()
@@ -77,55 +69,19 @@ public class Enemy : Component
 
     public void HandleShoot()
     {
-        if (currentCd > 0)
+        if (shootCd > 0)
         {
-            currentCd -= Raylib.GetFrameTime();
+            shootCd -= Raylib.GetFrameTime();
             return;
         }
 
-        currentCd = cooldown;
+        Ball.BallConfig config = new();
+        config.origin = this;
+        config.targets.Add("player");
 
-        Ball ball;
-        if (balls.Count > 0)
-        {
-            ball = balls.Dequeue();
-        }
-        else
-        {
-            GameObject ballObj = new GameObject();
-            ballObj.AddComponent(new Ball());
+        Shoot(config);
 
-            // TODO: Try to optimize; i feel like we can reuse the same texture that was loaded
-            // TODO: Make asset manager system
-            ballObj.AddComponent(new Drawable(AssetManager.Instance.Textures["enemy_bullet"][0]));
-            ballObj.AddComponent(new Animator(AssetManager.Instance.Textures["enemy_bullet"], 0.1f, true));
-
-            ball = GameObject.Scene.AddObject(ballObj).GetComponent<Ball>();
-
-            ball.OnDespawn += OnBallDespawn;
-        }
-
-        ball.GameObject.position = this.GameObject.position;
-        ball.Reinitialize();
-
-        ball.SetDirection(RandomDirection());
-    }
-
-    private Vector2 RandomDirection()
-    {
-        Random rnd = new Random();
-
-        float min = -1;
-        float max = 1;
-        float randX = (float)(rnd.NextDouble() * (max - min) + min);
-        float randY = (float)(rnd.NextDouble() * (max - min) + min);
-
-        return new Vector2(randX, randY);
-    }
-
-    private void OnBallDespawn(Ball ball)
-    {
-        balls.Enqueue(ball);
+        shootCd = props.shootCd;
     }
 
     public void HandleMovement()

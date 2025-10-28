@@ -9,6 +9,7 @@ public class GameObject
     public Vector2 position = Vector2.Zero;
 
     public List<Component> components = new List<Component>();
+    public List<string> Tags { get; private set; } = new();
 
     public GameObject()
     {

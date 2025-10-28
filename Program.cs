@@ -17,9 +17,7 @@ public class Program
         Scene gameScene = new Scene();
 
         GameObject playerObject = new GameObject();
-        playerObject.AddComponent(new Drawable());
         playerObject.AddComponent(new Player());
-        playerObject.AddComponent(new Animator());
         playerObject.name = "Player Object";
         gameScene.AddObject(playerObject);
 

@@ -1,29 +1,26 @@
 using System.Numerics;
 using Raylib_cs;
 
-public class Player : Component
+public class Player : Agent
 {
     private Animator anim = null!;
     private Drawable dr = null!;
 
-    // Movement options
-    private int speed;
-    private int baseSpeed = 100;
-    private int speedScale = 4;
-    private Vector2 direction = Vector2.Zero;
-
-    // Shoot options
-    private float cooldown = 0.1f;
-    private float currentCd;
-    private Queue<Ball> balls = new();
-
     public override void Initialize()
     {
-        speed = baseSpeed;
+        GameObject.AddComponent(new Drawable());
+        GameObject.AddComponent(new Animator());
+
         anim = GameObject.GetComponent<Animator>();
         dr = GameObject.GetComponent<Drawable>();
 
+        Vector2 size = new(dr.Texture.Width, dr.Texture.Height);
+        GameObject.AddComponent(new Collision(size));
+
         dr.SetScale(5);
+
+        props.type = AgentType.Ally;
+        GameObject.Tags.Add("player");
     }
 
     public override void Update()
@@ -34,56 +31,17 @@ public class Player : Component
 
     public void HandleShoot()
     {
-        if (currentCd > 0) currentCd -= Raylib.GetFrameTime();
-        if (!Raylib.IsKeyDown(KeyboardKey.Space) || currentCd > 0) return;
+        if (shootCd > 0) shootCd -= Raylib.GetFrameTime();
+        if (!Raylib.IsKeyDown(KeyboardKey.Space) || shootCd > 0) return;
 
-        currentCd = cooldown;
+        Ball.BallConfig config = new();
+        config.canBounce = true;
+        config.origin = this;
+        config.targets.Add("enemy");
+        
+        Shoot(config);
 
-        Ball ball;
-        if (balls.Count > 0)
-        {
-            ball = balls.Dequeue();
-        }
-        else
-        {
-            GameObject ballObj = new GameObject();
-            Ball.BallConfig config = new();
-            config.canBounce = true;
-            config.collisionSize = new Vector2(AssetManager.Instance.Textures["player_bullet"][0].Width, AssetManager.Instance.Textures["player_bullet"][0].Height);
-
-            ball = new Ball();
-            ballObj.AddComponent(ball);
-            ballObj.AddComponent(new Drawable(AssetManager.Instance.Textures["player_bullet"][0]));
-            ballObj.AddComponent(new Animator(AssetManager.Instance.Textures["player_bullet"], 0.1f, true));
-            ballObj.AddComponent(new Collision(config.collisionSize));
-    
-            GameObject.Scene.AddObject(ballObj);
-
-            ball.SetConfig(config);
-            ball.OnDespawn += OnBallDespawn;
-        }
-
-        ball.GameObject.position = this.GameObject.position;
-        ball.Reinitialize();
-
-        ball.SetDirection(RandomDirection());
-    }
-    
-    private Vector2 RandomDirection()
-    {
-        Random rnd = new Random();
-
-        float min = -1;
-        float max = 1;
-        float randX = (float)(rnd.NextDouble() * (max - min) + min);
-        float randY = (float)(rnd.NextDouble() * (max - min) + min);
-
-        return new Vector2(randX, randY);
-    }
-
-    private void OnBallDespawn(Ball ball)
-    {
-        balls.Enqueue(ball);
+        shootCd = props.shootCd;
     }
 
     public void HandleMovement()
@@ -98,8 +56,8 @@ public class Player : Component
 
         // Sneak-like movement
         if (Raylib.IsKeyDown(KeyboardKey.LeftShift))
-            speed = (baseSpeed * speedScale) / 2;
-        else speed = (baseSpeed * speedScale);
+            speed = (props.baseSpeed * props.speedScale) / 2;
+        else speed = (props.baseSpeed * props.speedScale);
 
         if (this.direction != Vector2.Zero)
         {
