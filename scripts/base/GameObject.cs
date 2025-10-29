@@ -11,11 +11,6 @@ public class GameObject
     public List<Component> components = new List<Component>();
     public List<string> Tags { get; private set; } = new();
 
-    public GameObject()
-    {
-        Initialize();
-    }
-
     public T GetComponent<T>() where T : Component
     {
         foreach (var component in components)
@@ -49,7 +44,7 @@ public class GameObject
         components.Add(component);
 
         // For when adding a component during run time
-        if (Raylib.IsWindowReady())
+        if (Scene != null)
         {
             component.Initialize();
             component.Start();

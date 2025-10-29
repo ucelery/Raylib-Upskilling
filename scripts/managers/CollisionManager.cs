@@ -74,7 +74,9 @@ public class CollisionManager
     public void AddCollision(Collision collision)
     {
         if (!collisions.Contains(collision) && !newCollisions.Contains(collision))
+        {
             newCollisions.Add(collision);
+        }
     }
 
     public void RemoveCollision(Collision collision)

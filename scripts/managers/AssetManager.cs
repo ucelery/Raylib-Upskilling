@@ -26,7 +26,6 @@ public class AssetManager
         
         // Initialize Sprites
         string[] spriteFiles = Directory.GetFiles("resources/sprites", "*", SearchOption.AllDirectories);
-        Console.WriteLine("Initializing Sprites");
         foreach (string file in spriteFiles)
         {
             string fileName = Path.GetFileNameWithoutExtension(file);
@@ -36,7 +35,6 @@ public class AssetManager
         /// TODO: Make it so that its possible to make nesting folders within the animations directory
 
         // Initialize Animations
-        Console.WriteLine("Initializing Animations");
         string[] animDirectories = Directory.GetDirectories("resources/animations");
         foreach (string dir in animDirectories)
         {
