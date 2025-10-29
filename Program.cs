@@ -16,16 +16,14 @@ public class Program
 
         Scene gameScene = new Scene();
 
-        GameObject playerObject = new GameObject();
+        GameObject playerObject = new GameObject(gameScene);
         playerObject.AddComponent(new Player());
         playerObject.name = "Player Object";
-        gameScene.AddObject(playerObject);
 
-        GameObject enemyObject = new GameObject();
+        GameObject enemyObject = new GameObject(gameScene);
         enemyObject.AddComponent(new Drawable(AssetManager.Instance.Textures["Alien02"][0]));
         enemyObject.AddComponent(new Enemy());
         enemyObject.position = new Vector2(windowWidth / 2, windowHeight / 2);
-        gameScene.AddObject(enemyObject);
 
         gameScene.Initialize();
         gameScene.Start();

@@ -7,9 +7,8 @@ public class GameObject
     public Scene Scene = null!;
     public bool enabled = true;
     public Vector2 position = Vector2.Zero;
-
     public List<Component> components = new List<Component>();
-    public List<string> Tags { get; private set; } = new();
+    public string Tag = "";
 
     public T GetComponent<T>() where T : Component
     {
@@ -18,12 +17,13 @@ public class GameObject
             if (component is T tComponent) return tComponent;
         }
 
-        return null;
+        return null!;
     }
 
-    public void Attach(Scene scene)
+    public GameObject(Scene scene)
     {
         this.Scene = scene;
+        scene.AddObject(this);
     }
 
     public void SetActive(bool flag)
@@ -44,7 +44,7 @@ public class GameObject
         components.Add(component);
 
         // For when adding a component during run time
-        if (Scene != null)
+        if (Scene != null && Scene.IsSceneReady)
         {
             component.Initialize();
             component.Start();

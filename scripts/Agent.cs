@@ -32,18 +32,12 @@ public class Agent : Component
         }
         else
         {
-            GameObject ballObj = new GameObject();
+            GameObject ballObj = new GameObject(GameObject.Scene);
             config.collisionSize = new Vector2(AssetManager.Instance.Textures["player_bullet"][0].Width, AssetManager.Instance.Textures["player_bullet"][0].Height);
 
-            ball = new Ball();
+            ball = new Ball(config);
             ballObj.AddComponent(ball);
-            ballObj.AddComponent(new Drawable(AssetManager.Instance.Textures["player_bullet"][0]));
-            ballObj.AddComponent(new Animator(AssetManager.Instance.Textures["player_bullet"], 0.1f, true));
-            ballObj.AddComponent(new Collision(config.collisionSize));
 
-            GameObject.Scene.AddObject(ballObj);
-
-            ball.SetConfig(config);
             ball.OnDespawn += OnBallDespawn;
 
             ball.GameObject.position = this.GameObject.position;

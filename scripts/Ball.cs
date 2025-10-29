@@ -12,6 +12,7 @@ public class Ball : Component
         public Vector2 collisionSize = Vector2.Zero;
         public Agent origin = null!;
         public List<string> targets = new();
+        public string spriteName = "";
     }
 
     private BallConfig config = new();
@@ -19,6 +20,11 @@ public class Ball : Component
     public float despawnTimeLeft;
     public delegate void BallEvent(Ball ball);
     public event BallEvent? OnDespawn;
+
+    public Ball(BallConfig config)
+    {
+        this.config = config;
+    }
 
     public override void Initialize()
     {
@@ -28,6 +34,9 @@ public class Ball : Component
     public override void Start()
     {
         GameObject.AddComponent(new Collision(config.collisionSize));
+        GameObject.AddComponent(new Drawable());
+        GameObject.AddComponent(new Animator());
+
         Collision col = GameObject.GetComponent<Collision>();
         col.OnCollisionEnter += HandleHit;
     }
@@ -60,12 +69,14 @@ public class Ball : Component
     private void HandleHit(Collision other)
     {
         bool isBall = other.GameObject.GetComponent<Ball>() != null;
-        bool isSameOrigin = other.GameObject.GetComponent<Ball>().config.origin == config.origin;
+        bool isSameOrigin = config.targets.Contains(other.GameObject.Tag);
+
+        Console.WriteLine($"{isBall} || {isSameOrigin} : {config.targets.Contains(other.GameObject.Tag)}");
 
         // Ignore Ball and Self Collision
         if (isBall || isSameOrigin) return;
 
-        GameObject.SetActive(false);
+        // GameObject.SetActive(false);
         OnDespawn?.Invoke(this);
     }
 
@@ -106,10 +117,5 @@ public class Ball : Component
             GameObject.SetActive(false);
             OnDespawn?.Invoke(this);
         }
-    }
-
-    public void SetConfig(BallConfig config)
-    {
-        this.config = config;
     }
 }

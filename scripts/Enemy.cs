@@ -33,11 +33,13 @@ public class Enemy : Agent
         actionTimer = behaviours[currentBehaviour].duration;
 
         props.type = AgentType.Enemy;
-        GameObject.Tags.Add("enemy");
+        props.shootCd = 1;
+        GameObject.Tag = "enemy";
     }
 
     public override void Update()
     {
+        return;
         actionTimer -= Raylib.GetFrameTime();
         if (actionTimer <= 0)
         {

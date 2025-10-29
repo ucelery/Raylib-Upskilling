@@ -8,19 +8,20 @@ public class Player : Agent
 
     public override void Initialize()
     {
-        GameObject.AddComponent(new Drawable());
+        GameObject.AddComponent(new Drawable(AssetManager.Instance.Textures["player_idle"][0]));
         GameObject.AddComponent(new Animator());
 
         anim = GameObject.GetComponent<Animator>();
         dr = GameObject.GetComponent<Drawable>();
 
         Vector2 size = new(dr.Texture.Width, dr.Texture.Height);
-        GameObject.AddComponent(new Collision(size));
+        GameObject.AddComponent(new Collision(size, new Vector2(0, size.Y / -2)));
 
-        dr.SetScale(5);
+        dr.SetScale(3);
 
         props.type = AgentType.Ally;
-        GameObject.Tags.Add("player");
+        props.shootCd = 0.25f;
+        GameObject.Tag = "player";
     }
 
     public override void Update()
@@ -38,6 +39,7 @@ public class Player : Agent
         config.canBounce = true;
         config.origin = this;
         config.targets.Add("enemy");
+        config.spriteName = "player_bullet";
         
         Shoot(config);
 

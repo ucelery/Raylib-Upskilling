@@ -1,12 +1,13 @@
-using System.Numerics;
-
 public class Scene
 {
     private List<GameObject> children = new List<GameObject>();
     private List<GameObject> toAdd = new List<GameObject>();
 
+    public bool IsSceneReady = false;
+
     public void Initialize()
     {
+        IsSceneReady = true;
         foreach (GameObject obj in toAdd)
         {
             obj.Initialize();
@@ -47,7 +48,6 @@ public class Scene
 
     public GameObject AddObject(GameObject gameObject)
     {
-        gameObject.Attach(this);
         toAdd.Add(gameObject);
 
         return gameObject;

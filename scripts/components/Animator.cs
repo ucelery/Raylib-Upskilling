@@ -3,7 +3,7 @@ using Raylib_cs;
 
 public class Animator : Component
 {
-    private List<Texture2D> sprites;
+    private List<Texture2D> sprites = null!;
     private int index = 0;
     private float timer = 0;
     public float duration = 0.5f;

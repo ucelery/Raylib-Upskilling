@@ -14,12 +14,18 @@ public class Collision : Component
     public Collision(Vector2 size)
     {
         this.size = size;
+        offset = size / 2;
+    }
+
+    public Collision(Vector2 size, Vector2 offset)
+    {
+        this.size = size;
+        this.offset = (size / 2) + offset;
     }
 
     public override void Start()
     {
         CollisionManager.Instance.AddCollision(this);
-        offset = size / 2;
     }
 
     public override void Update()
