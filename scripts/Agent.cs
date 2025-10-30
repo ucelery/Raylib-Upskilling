@@ -23,8 +23,8 @@ public class Agent : Component
     {
         speed = props.baseSpeed;
     }
-    
-    public void Shoot(Ball.BallConfig config)
+
+    public Ball Shoot(Ball.BallConfig config)
     {
         Ball ball;
         if (balls.Count > 0)
@@ -46,23 +46,13 @@ public class Agent : Component
         ball.GameObject.position = this.GameObject.position;
         ball.Reinitialize();
 
-        ball.SetDirection(RandomDirection());
+        ball.SetDirection(config.direction);
+
+        return ball;
     }
 
     private void OnBallDespawn(Ball ball)
     {
         balls.Enqueue(ball);
-    }
-    
-    private Vector2 RandomDirection()
-    {
-        Random rnd = new Random();
-
-        float min = -1;
-        float max = 1;
-        float randX = (float)(rnd.NextDouble() * (max - min) + min);
-        float randY = (float)(rnd.NextDouble() * (max - min) + min);
-
-        return new Vector2(randX, randY);
     }
 }

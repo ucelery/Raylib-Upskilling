@@ -14,13 +14,13 @@ public class Player : Agent
         anim = GameObject.GetComponent<Animator>();
         dr = GameObject.GetComponent<Drawable>();
 
-        Vector2 size = new(dr.Texture.Width, dr.Texture.Height);
-        GameObject.AddComponent(new Collision(size, new Vector2(0, size.Y / -2)));
+        // Vector2 size = new(dr.Texture.Width, dr.Texture.Height);
+        // GameObject.AddComponent(new Collision(size, new Vector2(0, size.Y / -2)));
 
         dr.SetScale(3);
 
         props.type = AgentType.Ally;
-        props.shootCd = 0.25f;
+        props.shootCd = 0.0000001f;
         GameObject.Tag = "player";
         GameObject.name = "Player Object";
     }
@@ -34,17 +34,42 @@ public class Player : Agent
     public void HandleShoot()
     {
         if (shootCd > 0) shootCd -= Raylib.GetFrameTime();
-        if (!Raylib.IsKeyDown(KeyboardKey.Space) || shootCd > 0) return;
+        if (!Raylib.IsMouseButtonDown(0) || shootCd > 0) return;
 
         Ball.BallConfig config = new();
-        config.canBounce = true;
+        // config.canBounce = true;
         config.origin = this;
         config.targets.Add("enemy");
         config.spriteName = "player_bullet";
-        
+        config.direction = BulletSpread();
+
         Shoot(config);
 
         shootCd = props.shootCd;
+    }
+
+    public Vector2 BulletSpread()
+    {
+        Vector2 mousePos = Raylib.GetMousePosition();
+        Random rand = new Random();
+        float randomValue = rand.NextSingle() * (10 - 0) + 0;
+
+        return AngleOffset(mousePos, randomValue);
+    }
+    
+    public Vector2 AngleOffset(Vector2 currentDir, float angle)
+    {
+        float angleOffset = Raylib.DEG2RAD * angle;
+        Vector2 dir = Vector2.Normalize(currentDir - GameObject.position);
+
+        // Rotation formula
+        float cos = MathF.Cos(angleOffset);
+        float sin = MathF.Sin(angleOffset);
+
+        return new Vector2(
+            dir.X * cos - dir.Y * sin,
+            dir.X * sin + dir.Y * cos
+        );
     }
 
     public void HandleMovement()

@@ -86,6 +86,7 @@ public class Enemy : Agent
         config.origin = this;
         config.targets.Add("player");
         config.spriteName = "enemy_bullet";
+        config.direction = RandomDirection();
 
         Shoot(config);
 
@@ -95,5 +96,17 @@ public class Enemy : Agent
     public void HandleMovement()
     {
         GameObject.position += Vector2.Normalize(this.direction) * speed * Raylib.GetFrameTime();
+    }
+
+    private Vector2 RandomDirection()
+    {
+        Random rnd = new Random();
+
+        float min = -1;
+        float max = 1;
+        float randX = (float)(rnd.NextDouble() * (max - min) + min);
+        float randY = (float)(rnd.NextDouble() * (max - min) + min);
+
+        return new Vector2(randX, randY);
     }
 }

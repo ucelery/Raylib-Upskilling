@@ -31,20 +31,31 @@ public class CollisionManager
 
     private void HandleCollisions()
     {
+        HashSet<(Collision, Collision)> checked_pairs = new();
+
         foreach (List<Collision> col_list in collisionsCells.Values)
-            foreach (Collision a_col in col_list)
-                foreach (Collision b_col in col_list)
+            for (int i = 0; i < col_list.Count; i++)
+        {
+            for (int j = i + 1; j < col_list.Count; j++)
+            {
+                Collision a = col_list[i];
+                Collision b = col_list[j];
+
+                var pair = a.GetHashCode() < b.GetHashCode() ? (a, b) : (b, a);
+
+                if (checked_pairs.Contains(pair))
+                    continue;
+
+                checked_pairs.Add(pair);
+
+                bool is_colliding = Raylib.CheckCollisionRecs(a.rectangle, b.rectangle);
+                if (is_colliding)
                 {
-                    if (a_col == b_col) continue;
-
-                    bool isColliding = Raylib.CheckCollisionRecs(a_col.rectangle, b_col.rectangle);
-
-                    if (isColliding)
-                    {
-                        a_col.OnCollisionEnter?.Invoke(b_col);
-                        b_col.OnCollisionEnter?.Invoke(a_col);
-                    }
+                    a.OnCollisionEnter?.Invoke(b);
+                    b.OnCollisionEnter?.Invoke(a);
                 }
+            }
+        }
     }
 
     private void UpdateCollisionCells()
@@ -64,7 +75,7 @@ public class CollisionManager
                     list = new List<Collision>();
                     collisionsCells[cell] = list;
                 }
-                
+
                 list.Add(col);
             }
         }
@@ -100,6 +111,9 @@ public class CollisionManager
                 Raylib.DrawRectangleLines(x * (int)cellSize.X, y * (int)cellSize.Y, (int)cellSize.X, (int)cellSize.Y, Color.White);
                 Raylib.DrawText($"({x}, {y})", x * (int)cellSize.X, y * (int)cellSize.Y, 1, Color.Red);
             }
+
+        // No. of Collisions
+        Raylib.DrawText($"{collisions.Count}", 0, 25, 25, Color.Green);
     }
     
     public List<Vector2> GetCell(Rectangle rect)

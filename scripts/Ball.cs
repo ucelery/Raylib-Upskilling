@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Numerics;
 using Raylib_cs;
 
@@ -34,8 +35,8 @@ public class Ball : Component
     public override void Start()
     {
         GameObject.AddComponent(new Collision(config.collisionSize));
-        GameObject.AddComponent(new Drawable());
-        GameObject.AddComponent(new Animator());
+        GameObject.AddComponent(new Drawable(AssetManager.Instance.Textures[config.spriteName][0]));
+        GameObject.AddComponent(new Animator(AssetManager.Instance.Textures[config.spriteName]));
 
         Collision col = GameObject.GetComponent<Collision>();
         col.OnCollisionEnter += HandleHit;
@@ -45,6 +46,7 @@ public class Ball : Component
     {
         HandleMovement();
         HandleDespawn();
+        HandleOffScreen();
     }
 
     public void Reinitialize()
@@ -66,6 +68,18 @@ public class Ball : Component
         HandleBounce();
     }
 
+    private void HandleOffScreen()
+    {
+        if (GameObject.position.X > Raylib.GetScreenWidth() ||
+        GameObject.position.X < 0 || 
+        GameObject.position.Y > Raylib.GetScreenHeight() ||
+        GameObject.position.Y < 0)
+        {
+            GameObject.SetActive(false);
+            OnDespawn?.Invoke(this);
+        }
+    }
+
     private void HandleHit(Collision other)
     {
         bool isBall = other.GameObject.GetComponent<Ball>() == null;
@@ -73,8 +87,6 @@ public class Ball : Component
 
         // Ignore Ball and Self Collision
         if (!isBall || isSameOrigin) return;
-
-        Console.WriteLine($"Colliding with enemy? {other.GameObject.name}");
 
         GameObject.SetActive(false);
         OnDespawn?.Invoke(this);
@@ -114,6 +126,7 @@ public class Ball : Component
 
         if (despawnTimeLeft <= 0)
         {
+            Debug.WriteLine("Despawn");
             GameObject.SetActive(false);
             OnDespawn?.Invoke(this);
         }
