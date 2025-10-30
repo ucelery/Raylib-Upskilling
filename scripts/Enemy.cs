@@ -14,6 +14,7 @@ public class Enemy : Agent
     private int currentBehaviour = 0;
     private float actionTimer;
 
+    private Drawable dr = null!;
 
     public override void Initialize()
     {
@@ -32,14 +33,18 @@ public class Enemy : Agent
 
         actionTimer = behaviours[currentBehaviour].duration;
 
+        GameObject.AddComponent(new Drawable(AssetManager.Instance.Textures["Alien02"][0]));
+
+        dr = GameObject.GetComponent<Drawable>();
+        Vector2 size = new(dr.Texture.Width, dr.Texture.Height);
+        GameObject.AddComponent(new Collision(size));
+
         props.type = AgentType.Enemy;
-        props.shootCd = 1;
-        GameObject.Tag = "enemy";
+        props.shootCd = 0.001f;
     }
 
     public override void Update()
     {
-        return;
         actionTimer -= Raylib.GetFrameTime();
         if (actionTimer <= 0)
         {
@@ -80,6 +85,7 @@ public class Enemy : Agent
         Ball.BallConfig config = new();
         config.origin = this;
         config.targets.Add("player");
+        config.spriteName = "enemy_bullet";
 
         Shoot(config);
 

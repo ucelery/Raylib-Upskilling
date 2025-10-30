@@ -4,7 +4,7 @@ using Raylib_cs;
 public class Ball : Component
 {
     public struct BallConfig() {
-        public int speed = 100;
+        public int speed = 75;
         public int speedScale = 4;
         public float despawnTimer = 5;
         public Vector2 direction = Vector2.Zero;
@@ -68,15 +68,15 @@ public class Ball : Component
 
     private void HandleHit(Collision other)
     {
-        bool isBall = other.GameObject.GetComponent<Ball>() != null;
-        bool isSameOrigin = config.targets.Contains(other.GameObject.Tag);
-
-        Console.WriteLine($"{isBall} || {isSameOrigin} : {config.targets.Contains(other.GameObject.Tag)}");
+        bool isBall = other.GameObject.GetComponent<Ball>() == null;
+        bool isSameOrigin = config.origin == other.GameObject.GetComponent<Agent>();
 
         // Ignore Ball and Self Collision
-        if (isBall || isSameOrigin) return;
+        if (!isBall || isSameOrigin) return;
 
-        // GameObject.SetActive(false);
+        Console.WriteLine($"Colliding with enemy? {other.GameObject.name}");
+
+        GameObject.SetActive(false);
         OnDespawn?.Invoke(this);
     }
 

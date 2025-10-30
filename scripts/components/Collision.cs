@@ -42,9 +42,9 @@ public class Collision : Component
 
     private void DrawHitboxes()
     {
-        Vector2 cel_pos = CollisionManager.Instance.GetCell(GameObject.position);
+        List<Vector2> cel_pos = CollisionManager.Instance.GetCell(rectangle);
 
-        Raylib.DrawText($"({cel_pos.X}, {cel_pos.Y})", (int)GameObject.position.X, (int)GameObject.position.Y - 10, 5, Color.White);
+        // Raylib.DrawText($"({cel_pos.X}, {cel_pos.Y})", (int)GameObject.position.X, (int)GameObject.position.Y - 10, 5, Color.White);
         Raylib.DrawRectangleLines((int)GameObject.position.X - (int)offset.X, (int)GameObject.position.Y - (int)offset.Y, (int)rectangle.Width, (int)rectangle.Height, Color.Green);
     }
 }

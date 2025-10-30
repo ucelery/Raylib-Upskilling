@@ -49,20 +49,25 @@ public class CollisionManager
 
     private void UpdateCollisionCells()
     {
-        Dictionary<Vector2, List<Collision>> temp = new();
+        foreach (var list in collisionsCells.Values)
+            list.Clear();
+
         foreach (var col in collisions)
         {
             if (!col.enabled) continue;
 
-            Vector2 cell = GetCell(col.GameObject.position);
-
-            if (!temp.ContainsKey(cell))
-                temp.Add(cell, new List<Collision>());
-
-            temp[cell].Add(col);
+            List<Vector2> cells = GetCell(col.rectangle);
+            foreach (Vector2 cell in cells)
+            {
+                if (!collisionsCells.TryGetValue(cell, out var list))
+                {
+                    list = new List<Collision>();
+                    collisionsCells[cell] = list;
+                }
+                
+                list.Add(col);
+            }
         }
-
-        collisionsCells = temp;
 
         if (newCollisions.Count > 0)
         {
@@ -93,14 +98,24 @@ public class CollisionManager
             for (int y = 0; y < yCellSize; y++)
             {
                 Raylib.DrawRectangleLines(x * (int)cellSize.X, y * (int)cellSize.Y, (int)cellSize.X, (int)cellSize.Y, Color.White);
-                Raylib.DrawText($"({x}, {y})", x * (int)cellSize.X, y * (int)cellSize.Y, 1, Color.White);
+                Raylib.DrawText($"({x}, {y})", x * (int)cellSize.X, y * (int)cellSize.Y, 1, Color.Red);
             }
     }
     
-    public Vector2 GetCell(Vector2 position)
+    public List<Vector2> GetCell(Rectangle rect)
     {
-        int cellX = (int)(position.X / cellSize.X);
-        int cellY = (int)(position.Y / cellSize.Y);
-        return new Vector2(cellX, cellY);
+
+        List<Vector2> cells = new();
+
+        int startX = (int)(rect.X / cellSize.X);
+        int startY = (int)(rect.Y / cellSize.Y);
+        int endX = (int)((rect.X + rect.Width) / cellSize.X);
+        int endY = (int)((rect.Y + rect.Height) / cellSize.Y);
+
+        for (int x = startX; x <= endX; x++)
+            for (int y = startY; y <= endY; y++)
+                cells.Add(new Vector2(x, y));
+
+        return cells;
     }
 }

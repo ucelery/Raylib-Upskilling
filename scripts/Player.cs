@@ -22,6 +22,7 @@ public class Player : Agent
         props.type = AgentType.Ally;
         props.shootCd = 0.25f;
         GameObject.Tag = "player";
+        GameObject.name = "Player Object";
     }
 
     public override void Update()

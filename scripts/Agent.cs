@@ -1,4 +1,5 @@
 using System.Numerics;
+using Raylib_cs;
 
 public class Agent : Component
 {
@@ -33,18 +34,19 @@ public class Agent : Component
         else
         {
             GameObject ballObj = new GameObject(GameObject.Scene);
-            config.collisionSize = new Vector2(AssetManager.Instance.Textures["player_bullet"][0].Width, AssetManager.Instance.Textures["player_bullet"][0].Height);
+            List<Texture2D> texture = AssetManager.Instance.Textures[config.spriteName];
+            config.collisionSize = new Vector2(texture[0].Width, texture[0].Height);
 
             ball = new Ball(config);
             ballObj.AddComponent(ball);
 
             ball.OnDespawn += OnBallDespawn;
-
-            ball.GameObject.position = this.GameObject.position;
-            ball.Reinitialize();
-
-            ball.SetDirection(RandomDirection());
         }
+
+        ball.GameObject.position = this.GameObject.position;
+        ball.Reinitialize();
+
+        ball.SetDirection(RandomDirection());
     }
 
     private void OnBallDespawn(Ball ball)
